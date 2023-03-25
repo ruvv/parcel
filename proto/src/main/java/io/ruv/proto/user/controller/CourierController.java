@@ -40,13 +40,13 @@ public class CourierController {
 
     @PutMapping(value = "parcels/{id}/status")
     public ParcelDto updateParcelStatus(@PathVariable long id,
-                                        @RequestBody ParcelStatus status) { //todo fix quotes in request
+                                        @RequestBody ParcelStatus status) {
 
         return parcelService.updateParcelStatus(id, status);
     }
 
     @PutMapping(value = "status")
-    public CourierDto updateCourierStatus(@RequestBody CourierStatus courierStatus) { //todo fix quotes in request
+    public CourierDto updateCourierStatus(@RequestBody CourierStatus courierStatus) {
 
         return courierService.updateCurrentCourierStatus(courierStatus);
     }
