@@ -1,0 +1,37 @@
+version: "3.4"
+services:
+  warehouse-pg:
+    container_name: users-pg
+    image: postgres:15
+    restart: always
+    user: postgres
+    hostname: users-pg
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: ./postgres-users/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  warehouse-pg-adminer:
+    container_name: warehouse-pg-adminer
+    image: adminer
+    restart: always
+    depends_on:
+      - warehouse-pg
+    ports:
+      - "35432:8080"
+
+volumes:
+  pgdata:
