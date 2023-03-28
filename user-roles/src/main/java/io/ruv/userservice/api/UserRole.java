@@ -21,7 +21,7 @@ public enum UserRole {
     public static Optional<UserRole> tryParse(String string) {
 
         return Arrays.stream(UserRole.values())
-                .filter(userRole -> userRole.name().toLowerCase().equals(string))
+                .filter(userRole -> userRole.name().equalsIgnoreCase(string))
                 .findAny();
     }
 }
