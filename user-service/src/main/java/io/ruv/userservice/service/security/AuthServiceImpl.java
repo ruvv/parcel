@@ -4,12 +4,13 @@ import io.ruv.userservice.api.auth.LoginDto;
 import io.ruv.userservice.api.auth.TokenDto;
 import io.ruv.userservice.entity.User;
 import io.ruv.userservice.service.exception.BadCredentialsException;
-import io.ruv.userservice.service.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
             }
         } catch (UsernameNotFoundException e) {
 
-            throw new UserNotFoundException(loginDto.getUsername());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed", e);
         }
     }
 }
