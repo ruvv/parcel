@@ -29,11 +29,13 @@ public class CustomerRoutesConfig {
                                     var username = exchange.getRequest().getHeaders()
                                             .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
 
-                                    exchange.getRequest().mutate()
+                                    var mutated = exchange.getRequest().mutate()
                                             .path("/api/v1/customers/" + username)
                                             .build();
 
-                                    return chain.filter(exchange);
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
                                 }))
                         .uri("lb://user-service"))
 
@@ -45,11 +47,13 @@ public class CustomerRoutesConfig {
                                     var username = exchange.getRequest().getHeaders()
                                             .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
 
-                                    exchange.getRequest().mutate()
+                                    var mutated = exchange.getRequest().mutate()
                                             .path("/api/v1/customers/" + username)
                                             .build();
 
-                                    return chain.filter(exchange);
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
                                 }))
                         .uri("lb://user-service"))
                 .build();

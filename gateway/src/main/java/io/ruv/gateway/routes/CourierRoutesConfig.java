@@ -29,11 +29,13 @@ public class CourierRoutesConfig {
                                     var username = exchange.getRequest().getHeaders()
                                             .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
 
-                                    exchange.getRequest().mutate()
+                                    var mutated = exchange.getRequest().mutate()
                                             .path("/api/v1/couriers/" + username)
                                             .build();
 
-                                    return chain.filter(exchange);
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
                                 }))
                         .uri("lb://user-service"))
 
@@ -45,11 +47,13 @@ public class CourierRoutesConfig {
                                     var username = exchange.getRequest().getHeaders()
                                             .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
 
-                                    exchange.getRequest().mutate()
+                                    var mutated = exchange.getRequest().mutate()
                                             .path("/api/v1/couriers/" + username)
                                             .build();
 
-                                    return chain.filter(exchange);
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
                                 }))
                         .uri("lb://user-service"))
 
@@ -61,11 +65,13 @@ public class CourierRoutesConfig {
                                     var username = exchange.getRequest().getHeaders()
                                             .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
 
-                                    exchange.getRequest().mutate()
+                                    var mutated = exchange.getRequest().mutate()
                                             .path("/api/v1/couriers/" + username + "/status")
                                             .build();
 
-                                    return chain.filter(exchange);
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
                                 }))
                         .uri("lb://user-service"))
 
@@ -77,11 +83,13 @@ public class CourierRoutesConfig {
                                     var username = exchange.getRequest().getHeaders()
                                             .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
 
-                                    exchange.getRequest().mutate()
+                                    var mutated = exchange.getRequest().mutate()
                                             .path("/api/v1/couriers/" + username + "/location")
                                             .build();
 
-                                    return chain.filter(exchange);
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
                                 }))
                         .uri("lb://user-service"))
                 .build();
