@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @RestController
 @RequestMapping("/api/v1/login")
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class LoginController {
             @ApiResponse(responseCode = "200", description = "Login successful"),
             @ApiResponse(responseCode = "401", description = "Login failed", content = @Content)
     })
-    @PostMapping
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public TokenDto login(
             @Parameter(description = "User credentials") @RequestBody LoginDto loginDto) {
 
