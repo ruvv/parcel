@@ -48,6 +48,10 @@ public class CustomerServiceImpl implements CustomerService {
         var entity = repository.findById(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
+        if (customerUpdateDto.getEmail() == null && customerUpdateDto.getPassword() == null) {
+            return converter.dto(entity);
+        }
+
         var toSave = converter.update(entity, customerUpdateDto);
         var saved = repository.save(toSave);
 

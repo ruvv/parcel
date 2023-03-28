@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class CustomerController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerDto register(
-            @Parameter(description = "Customer info") @RequestBody CustomerRegistrationDto customer,
+            @Parameter(description = "Customer info") @Valid @RequestBody CustomerRegistrationDto customer,
             HttpServletResponse response) {
 
         var created = customerService.createCustomer(customer);
@@ -71,7 +72,7 @@ public class CustomerController {
     @PutMapping("{username}")
     public CustomerDto update(
             @Parameter(description = "Username of a customer") @PathVariable String username,
-            @Parameter(description = "Customer info") @RequestBody CustomerUpdateDto update) {
+            @Parameter(description = "Customer info") @Valid @RequestBody CustomerUpdateDto update) {
 
         return customerService.updateCustomer(username, update);
     }

@@ -62,6 +62,10 @@ public class CourierServiceImpl implements CourierService {
         var entity = repository.findOneByUsernameAndHasRole(username, UserRole.COURIER)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
+        if (courierUpdateDto.getEmail() == null && courierUpdateDto.getPassword() == null) {
+            return converter.dto(entity);
+        }
+
         var toSave = converter.update(entity, courierUpdateDto);
         var saved = repository.save(toSave);
 

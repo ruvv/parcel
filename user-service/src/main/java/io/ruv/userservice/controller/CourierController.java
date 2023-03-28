@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -62,7 +63,7 @@ public class CourierController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public CourierDto createCourier(
-            @Parameter(description = "Courier info") @RequestBody CourierCreateDto courierCreateDto,
+            @Parameter(description = "Courier info") @Valid @RequestBody CourierCreateDto courierCreateDto,
             HttpServletResponse response) {
 
         var created = courierService.createCourier(courierCreateDto);
@@ -87,7 +88,7 @@ public class CourierController {
     @PutMapping(value = "{username}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public CourierDto updateCourierByUsername(
             @Parameter(description = "Username of a courier") @PathVariable String username,
-            @Parameter(description = "Courier info") @RequestBody CourierUpdateDto courierUpdateDto) {
+            @Parameter(description = "Courier info") @Valid @RequestBody CourierUpdateDto courierUpdateDto) {
 
         return courierService.updateCourier(username, courierUpdateDto);
     }
@@ -115,7 +116,7 @@ public class CourierController {
     @PutMapping(value = "{username}/location", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public CourierDto updateLocation(
             @Parameter(description = "Username of a courier") @PathVariable String username,
-            @Parameter(description = "Courier location") @RequestBody Location location) {
+            @Parameter(description = "Courier location") @Valid @RequestBody Location location) {
 
         return courierService.updateCourierLocation(username, location);
     }
