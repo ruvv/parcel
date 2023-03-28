@@ -5,9 +5,9 @@ services:
     image: postgres:15
     restart: always
     user: postgres
-    hostname: users-pg
+    hostname: "${USER_DB_HOSTNAME}"
     ports:
-      - "5432:5432"
+      - "${USER_DB_PORT}:${USER_DB_PORT}"
     volumes:
       - type: volume
         source: pgdata
@@ -16,6 +16,7 @@ services:
         source: ./postgres-users/init.sql
         target: /docker-entrypoint-initdb.d/init.sql
     environment:
+      PGPORT: "${USER_DB_PORT}"
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     healthcheck:
@@ -24,14 +25,47 @@ services:
       timeout: 5s
       retries: 3
 
-  warehouse-pg-adminer:
-    container_name: warehouse-pg-adminer
-    image: adminer
+  parcel-discovery:
+    container_name: parcel-discovery
+    build: ../discovery/.
     restart: always
-    depends_on:
-      - warehouse-pg
     ports:
-      - "35432:8080"
+      - "${DISCOVERY_PORT}:${DISCOVERY_PORT}"
+    environment:
+      PORT: "${DISCOVERY_PORT}"
+      HOSTNAME: "${DISCOVERY_HOSTNAME}"
+
+  gateway:
+    container_name: parcel-gateway
+    build: ../gateway/.
+    restart: always
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    environment:
+      DISCOVERY_URL: "http://${DISCOVERY_HOSTNAME}:${DISCOVERY_PORT}/eureka/"
+      JWT_RSA_PUBLIC_KEY_PATH: "${JWT_RSA_PUBLIC_KEY_PATH}"
+    volumes:
+      - type: bind
+        source: ./jwtRS256.key.pub
+        target: "${JWT_RSA_PUBLIC_KEY_PATH}"
+
+  user-service:
+    container_name: user-service
+    build: ../user-service/.
+    restart: always
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    environment:
+      DISCOVERY_URL: "http://${DISCOVERY_HOSTNAME}:${DISCOVERY_PORT}/eureka/"
+      JWT_RSA_PRIVATE_KEY_PATH: "${JWT_RSA_PRIVATE_KEY_PATH}"
+      DB_URL: "jdbc:postgresql://${USER_DB_HOSTNAME}:${USER_DB_PORT}/userdb"
+      DB_USERNAME: "${USER_DB_USER}"
+      DB_PASSWORD: "${USER_DB_PASSWORD}"
+      JWT_TOKEN_EXPIRY_MS: "${JWT_TOKEN_EXPIRY_MS}"
+    volumes:
+      - type: bind
+        source: ./jwtRS256.key
+        target: "${JWT_RSA_PRIVATE_KEY_PATH}"
 
 volumes:
   pgdata:
