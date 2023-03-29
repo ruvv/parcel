@@ -92,6 +92,18 @@ services:
         source: ./jwtRS256.key
         target: "${JWT_RSA_PRIVATE_KEY_PATH}"
 
+  parcel-service:
+    container_name: parcel-service
+    build: ../parcel-service/.
+    restart: always
+    ports:
+      - "${PARCEL_SERVICE_PORT}:${PARCEL_SERVICE_PORT}"
+    environment:
+      DISCOVERY_URL: "http://${DISCOVERY_HOSTNAME}:${DISCOVERY_PORT}/eureka/"
+      DB_URL: "jdbc:postgresql://${PARCEL_DB_HOSTNAME}:${PARCEL_DB_PORT}/parceldb"
+      DB_USERNAME: "${PARCEL_DB_USER}"
+      DB_PASSWORD: "${PARCEL_DB_PASSWORD}"
+
 volumes:
   pg-users-data:
   pg-parcels-data:
