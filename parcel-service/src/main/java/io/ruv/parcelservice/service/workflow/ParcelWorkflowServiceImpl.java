@@ -1,15 +1,19 @@
 package io.ruv.parcelservice.service.workflow;
 
+import feign.FeignException;
 import io.ruv.parcelservice.api.ParcelStatus;
 import io.ruv.parcelservice.api.UserInfo;
 import io.ruv.parcelservice.entity.Parcel;
 import io.ruv.parcelservice.repo.ParcelRepository;
 import io.ruv.parcelservice.service.exception.ForbiddenParcelStatusChangeException;
 import io.ruv.parcelservice.service.exception.IllegalParcelStatusChangeException;
+import io.ruv.parcelservice.service.remote.RemoteUserService;
 import io.ruv.userservice.api.UserRole;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
@@ -21,6 +25,7 @@ import java.util.function.Function;
 public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
 
     private final ParcelRepository parcelRepository;
+    private final RemoteUserService userService;
 
     @Override
     public Parcel processCreatedParcel(Parcel parcel, UserInfo user) {
@@ -200,8 +205,20 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
     }
 
 
-    private void ensureAssigneeExists(@Nullable String assignee) {
+    private void ensureAssigneeExists(String assignee) {
 
+        try {
+
+            userService.getCourier(assignee);
+        } catch (FeignException.NotFound notFound) {
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format("User '%s' was not found.", assignee));
+        } catch (FeignException e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to query remote user-service.", e);
+        }
     }
 
     private void launchWorkflowEvent(Parcel parcel, UserInfo userInfo) {
@@ -214,6 +231,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
         launchWorkflowEvent(parcel, userInfo, prevStatus, null);
     }
 
+    @SuppressWarnings("unused")
     private void launchWorkflowEvent(Parcel parcel, UserInfo userInfo,
                                      @Nullable ParcelStatus prevStatus, @Nullable String prevAssignee) {
 
@@ -233,17 +251,19 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
                 return controlledAction.apply(parcel);
             } catch (RuntimeException e) {
 
-                cancelBalanceAdjustment(parcel);
+                cancelCreatorBalanceAdjustment(parcel);
                 throw e;
             }
         }
     }
 
+    @SuppressWarnings("unused")
     private void adjustCreatorBalance(Parcel parcel) {
         //todo
     }
 
-    private void cancelBalanceAdjustment(Parcel parcel) {
+    @SuppressWarnings("unused")
+    private void cancelCreatorBalanceAdjustment(Parcel parcel) {
         //todo
     }
 }
