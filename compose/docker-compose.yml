@@ -3,7 +3,6 @@ services:
   users-pg:
     container_name: users-pg
     image: postgres:15
-    restart: always
     user: postgres
     hostname: "${USER_DB_HOSTNAME}"
     ports:
@@ -28,7 +27,6 @@ services:
   parcel-pg:
     container_name: parcel-pg
     image: postgres:15
-    restart: always
     user: postgres
     hostname: "${PARCEL_DB_HOSTNAME}"
     ports:
@@ -53,7 +51,6 @@ services:
   parcel-discovery:
     container_name: parcel-discovery
     build: ../discovery/.
-    restart: always
     ports:
       - "${DISCOVERY_PORT}:${DISCOVERY_PORT}"
     environment:
@@ -63,7 +60,6 @@ services:
   gateway:
     container_name: parcel-gateway
     build: ../gateway/.
-    restart: always
     ports:
       - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     environment:
@@ -77,7 +73,6 @@ services:
   user-service:
     container_name: user-service
     build: ../user-service/.
-    restart: always
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     environment:
@@ -95,7 +90,6 @@ services:
   parcel-service:
     container_name: parcel-service
     build: ../parcel-service/.
-    restart: always
     ports:
       - "${PARCEL_SERVICE_PORT}:${PARCEL_SERVICE_PORT}"
     environment:
