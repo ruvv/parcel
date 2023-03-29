@@ -26,8 +26,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
     public Parcel processCreatedParcel(Parcel parcel, UserInfo user) {
 
         var saved = new BalanceAdjustingOrchestration(parcel).execute(parcelRepository::save);
-        notifyCreator(saved);
-        notifyAdministrators(saved, user);
+        launchWorkflowEvent(saved, user);
         return saved;
     }
 
@@ -35,8 +34,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
     public Parcel processUpdatedParcel(Parcel parcel, UserInfo user) {
 
         var saved = parcelRepository.save(parcel);
-        notifyCreator(saved);
-        notifyAdministrators(saved, user);
+        launchWorkflowEvent(saved, user);
         return saved;
     }
 
@@ -66,7 +64,8 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
             switch (currentStatus) {
 
                 case CREATED -> allowedStatuses.addAll(List.of(ParcelStatus.ASSIGNED, ParcelStatus.CANCELLED));
-                case ASSIGNED -> allowedStatuses.addAll(List.of(ParcelStatus.CREATED, ParcelStatus.CANCELLED));
+                case ASSIGNED ->
+                        allowedStatuses.addAll(List.of(ParcelStatus.CREATED, ParcelStatus.CANCELLED, ParcelStatus.ASSIGNED));
                 case DELIVERY_PROBLEM -> allowedStatuses.add(ParcelStatus.CANCELLED);
             }
         }
@@ -92,7 +91,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
         return allowedStatuses;
     }
 
-    private Parcel executeStatusChange(Parcel parcel, ParcelStatus newStatus, UserInfo userInfo, @Nullable String assignee) {
+    private Parcel executeStatusChange(Parcel parcel, ParcelStatus newStatus, UserInfo userInfo, @Nullable String newAssignee) {
 
         var currentStatus = parcel.getStatus();
 
@@ -102,19 +101,17 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
 
                 case ASSIGNED -> {
 
-                    ensureAssigneeExists(assignee);
-                    var toSave = parcel.setStatus(newStatus).setAssignedTo(assignee);
+                    ensureAssigneeExists(newAssignee);
+                    var toSave = parcel.setStatus(newStatus).setAssignedTo(newAssignee);
                     var saved = parcelRepository.save(toSave);
-                    notifyAssignee(saved, assignee);
-                    notifyCreator(saved);
+                    launchWorkflowEvent(saved, userInfo, currentStatus);
                     yield saved;
                 }
                 case CANCELLED -> {
 
                     var toSave = parcel.setStatus(ParcelStatus.CANCELLED);
                     var saved = new BalanceAdjustingOrchestration(toSave).execute(parcelRepository::save);
-                    notifyCreator(saved);
-                    notifyAdministrators(saved, userInfo);
+                    launchWorkflowEvent(saved, userInfo, currentStatus);
                     yield saved;
                 }
                 default -> throw new IllegalParcelStatusChangeException(parcel.getId(), currentStatus, newStatus);
@@ -127,8 +124,16 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
                     var prevAssignee = parcel.getAssignedTo();
                     var toSave = parcel.setStatus(ParcelStatus.CREATED).setAssignedTo(null);
                     var saved = parcelRepository.save(toSave);
-                    notifyCreator(saved);
-                    notifyAssignee(saved, prevAssignee);
+                    launchWorkflowEvent(saved, userInfo, currentStatus, prevAssignee);
+                    yield saved;
+                }
+                case ASSIGNED -> {
+
+                    ensureAssigneeExists(newAssignee);
+                    var prevAssignee = parcel.getAssignedTo();
+                    var toSave = parcel.setAssignedTo(newAssignee);
+                    var saved = parcelRepository.save(toSave);
+                    launchWorkflowEvent(saved, userInfo, currentStatus, prevAssignee);
                     yield saved;
                 }
                 case CANCELLED -> {
@@ -136,16 +141,14 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
                     var prevAssignee = parcel.getAssignedTo();
                     var toSave = parcel.setStatus(ParcelStatus.CANCELLED).setAssignedTo(null);
                     var saved = new BalanceAdjustingOrchestration(toSave).execute(parcelRepository::save);
-                    notifyCreator(saved);
-                    notifyAssignee(saved, prevAssignee);
-                    notifyAdministrators(saved, userInfo);
+                    launchWorkflowEvent(saved, userInfo, currentStatus, prevAssignee);
                     yield saved;
                 }
                 case DELIVERING -> {
 
                     var toSave = parcel.setStatus(ParcelStatus.DELIVERING);
                     var saved = parcelRepository.save(toSave);
-                    notifyCreator(saved);
+                    launchWorkflowEvent(saved, userInfo, currentStatus);
                     yield saved;
                 }
                 default -> throw new IllegalParcelStatusChangeException(parcel.getId(), currentStatus, newStatus);
@@ -158,15 +161,14 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
                     var toSave = parcel.setStatus(ParcelStatus.DELIVERED);
                     var saved = new BalanceAdjustingOrchestration(toSave).execute(parcelRepository::save);
                     adjustCreatorBalance(saved);
-                    notifyCreator(saved);
+                    launchWorkflowEvent(saved, userInfo, currentStatus);
                     yield saved;
                 }
                 case DELIVERY_PROBLEM -> {
 
                     var toSave = parcel.setStatus(ParcelStatus.DELIVERY_PROBLEM);
                     var saved = parcelRepository.save(toSave);
-                    notifyCreator(saved);
-                    notifyAdministrators(saved, userInfo);
+                    launchWorkflowEvent(saved, userInfo, currentStatus);
                     yield saved;
                 }
                 default -> throw new IllegalParcelStatusChangeException(parcel.getId(), currentStatus, newStatus);
@@ -178,17 +180,15 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
 
                     var toSave = parcel.setStatus(ParcelStatus.DELIVERING);
                     var saved = parcelRepository.save(toSave);
-                    notifyCreator(saved);
-                    notifyAdministrators(saved, userInfo);
+                    launchWorkflowEvent(saved, userInfo, currentStatus);
                     yield saved;
                 }
                 case CANCELLED -> {
 
+                    var prevAssignee = parcel.getAssignedTo();
                     var toSave = parcel.setStatus(ParcelStatus.CANCELLED);
                     var saved = new BalanceAdjustingOrchestration(toSave).execute(parcelRepository::save);
-                    notifyCreator(saved);
-                    notifyAssignee(saved, parcel.getAssignedTo());
-                    notifyAdministrators(saved, userInfo);
+                    launchWorkflowEvent(saved, userInfo, currentStatus, prevAssignee);
                     yield saved;
                 }
                 default -> throw new IllegalParcelStatusChangeException(parcel.getId(), currentStatus, newStatus);
@@ -199,28 +199,25 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
         };
     }
 
-    private void adjustCreatorBalance(Parcel parcel) {
-        //todo
-    }
-
-    private void cancelBalanceAdjustment(Parcel parcel) {
-        //todo
-    }
 
     private void ensureAssigneeExists(@Nullable String assignee) {
-        //todo
+
     }
 
-    private void notifyAssignee(Parcel parcel, String assignee) {
-        //todo
+    private void launchWorkflowEvent(Parcel parcel, UserInfo userInfo) {
+
+        launchWorkflowEvent(parcel, userInfo, null, null);
     }
 
-    private void notifyCreator(Parcel parcel) {
-        //todo
+    private void launchWorkflowEvent(Parcel parcel, UserInfo userInfo, ParcelStatus prevStatus) {
+
+        launchWorkflowEvent(parcel, userInfo, prevStatus, null);
     }
 
-    private void notifyAdministrators(Parcel parcel, UserInfo userInfo) {
-        //todo
+    private void launchWorkflowEvent(Parcel parcel, UserInfo userInfo,
+                                     @Nullable ParcelStatus prevStatus, @Nullable String prevAssignee) {
+
+        // todo feed it to streaming platform
     }
 
     @RequiredArgsConstructor
@@ -240,5 +237,13 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
                 throw e;
             }
         }
+    }
+
+    private void adjustCreatorBalance(Parcel parcel) {
+        //todo
+    }
+
+    private void cancelBalanceAdjustment(Parcel parcel) {
+        //todo
     }
 }
