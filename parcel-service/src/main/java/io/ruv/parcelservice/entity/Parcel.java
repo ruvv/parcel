@@ -33,7 +33,7 @@ public class Parcel {
     private String destination;
     private String description;
 
-    private int cost;
+    private Integer cost;
 
     private String createdBy;
     private String assignedTo;
