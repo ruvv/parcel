@@ -1,6 +1,6 @@
 version: "3.4"
 services:
-  warehouse-pg:
+  users-pg:
     container_name: users-pg
     image: postgres:15
     restart: always
@@ -10,13 +10,38 @@ services:
       - "${USER_DB_PORT}:${USER_DB_PORT}"
     volumes:
       - type: volume
-        source: pgdata
+        source: pg-users-data
         target: /var/lib/postgresql/data
       - type: bind
         source: ./postgres-users/init.sql
         target: /docker-entrypoint-initdb.d/init.sql
     environment:
       PGPORT: "${USER_DB_PORT}"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  parcel-pg:
+    container_name: parcel-pg
+    image: postgres:15
+    restart: always
+    user: postgres
+    hostname: "${PARCEL_DB_HOSTNAME}"
+    ports:
+      - "${PARCEL_DB_PORT}:${PARCEL_DB_PORT}"
+    volumes:
+      - type: volume
+        source: pg-parcels-data
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: ./postgres-parcels/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+    environment:
+      PGPORT: "${PARCEL_DB_PORT}"
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     healthcheck:
@@ -68,4 +93,5 @@ services:
         target: "${JWT_RSA_PRIVATE_KEY_PATH}"
 
 volumes:
-  pgdata:
+  pg-users-data:
+  pg-parcels-data:

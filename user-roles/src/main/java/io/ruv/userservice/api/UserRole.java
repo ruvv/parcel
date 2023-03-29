@@ -3,19 +3,30 @@ package io.ruv.userservice.api;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum UserRole {
     CUSTOMER,
     ADMIN,
     COURIER;
 
-    public static List<UserRole> tryParse(List<String> strings) {
+    public static Set<UserRole> tryParse(String[] strings) {
 
-        return strings.stream()
-                .map(UserRole::tryParse)
+        return tryParse(Arrays.stream(strings));
+    }
+
+    public static Set<UserRole> tryParse(List<String> strings) {
+
+        return tryParse(strings.stream());
+    }
+
+    private static Set<UserRole> tryParse(Stream<String> strings) {
+
+        return strings.map(UserRole::tryParse)
                 .flatMap(Optional::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public static Optional<UserRole> tryParse(String string) {
