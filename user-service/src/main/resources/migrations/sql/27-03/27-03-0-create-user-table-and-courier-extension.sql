@@ -4,6 +4,7 @@ CREATE TABLE users
     email             VARCHAR(255),
     password          VARCHAR(255),
     balance           INT          NOT NULL,
+    locked_balance    INT          NOT NULL,
     courier_status_id UUID,
     enabled           BOOLEAN      NOT NULL,
     CONSTRAINT pk_users PRIMARY KEY (username)

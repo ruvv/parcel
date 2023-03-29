@@ -26,6 +26,7 @@ public class CourierConverterImpl implements CourierConverter {
                 dto.getEmail(),
                 passwordEncoder.encode(dto.getPassword()),
                 0,
+                0,
                 new CourierExtension(null, null, CourierStatus.OFF_DUTY, null, null),
                 List.of(UserRole.COURIER),
                 true);

@@ -25,6 +25,7 @@ public class CustomerConverterImpl implements CustomerConverter {
                 dto.getEmail(),
                 passwordEncoder.encode(dto.getPassword()),
                 0,
+                0,
                 null,
                 List.of(UserRole.CUSTOMER),
                 true);
@@ -50,6 +51,6 @@ public class CustomerConverterImpl implements CustomerConverter {
         return new CustomerDto(
                 entity.getUsername(),
                 entity.getEmail(),
-                entity.getBalance());
+                entity.getBalance() - entity.getLockedBalance());
     }
 }

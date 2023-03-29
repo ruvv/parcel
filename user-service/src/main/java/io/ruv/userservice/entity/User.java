@@ -28,6 +28,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private int balance;
+    private int lockedBalance;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "courier_status_id", referencedColumnName = "id")
     private CourierExtension courierExtension;
