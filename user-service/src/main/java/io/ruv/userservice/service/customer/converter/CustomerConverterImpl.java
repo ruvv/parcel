@@ -24,7 +24,7 @@ public class CustomerConverterImpl implements CustomerConverter {
                 dto.getUsername(),
                 dto.getEmail(),
                 passwordEncoder.encode(dto.getPassword()),
-                0,
+                5,
                 0,
                 null,
                 List.of(UserRole.CUSTOMER),
