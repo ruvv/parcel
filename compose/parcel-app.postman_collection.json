@@ -1,0 +1,1445 @@
+{
+	"info": {
+		"_postman_id": "34459e5f-3bea-4661-9250-526af65a59e1",
+		"name": "parcel-app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8740292"
+	},
+	"item": [
+		{
+			"name": "customer",
+			"item": [
+				{
+					"name": "customer-register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"alice\",\r\n    \"email\": \"alice@yahoo.com\",\r\n    \"password\": \"alice-pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/signup",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer-login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.json().token;\r",
+									"\r",
+									"pm.collectionVariables.set(\"parcel-jwt\", token);\r",
+									"\r",
+									"pm.test(\"Token environment variable should be updated\", function() {\r",
+									"  const checkToken = pm.collectionVariables.get(\"parcel-jwt\");\r",
+									"  pm.expect(checkToken).to.eql(token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"alice\",\r\n    \"password\": \"alice-pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/signin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer-profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/customer",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer-update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"alice@yahoo.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/customer",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcels-list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/customer/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/customer/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"source\": \"home\",\r\n    \"destination\": \"work\",\r\n    \"description\": \"deliver me from home to work\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/customer/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"source\": \"home\",\r\n    \"destination\": \"bar\",\r\n    \"description\": \"deliver me from home to bar\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/customer/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-cancel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/customer/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "courier",
+			"item": [
+				{
+					"name": "courier-login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.json().token;\r",
+									"\r",
+									"pm.collectionVariables.set(\"parcel-jwt\", token);\r",
+									"\r",
+									"pm.test(\"Token environment variable should be updated\", function() {\r",
+									"  const checkToken = pm.collectionVariables.get(\"parcel-jwt\");\r",
+									"  pm.expect(checkToken).to.eql(token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"bob\",\r\n    \"password\": \"bob-pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/signin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier-profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courier",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier-update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"bob@yahoo.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/courier",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier-status-update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"ON_DUTY\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/courier/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier-location-update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"1\",\r\n    \"longitude\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/courier/location",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier",
+								"location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcels-list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courier/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/courier/parcels/18",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier",
+								"parcels",
+								"18"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-status-change",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"DELIVERING\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/courier/parcels/18/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"courier",
+								"parcels",
+								"18",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "admin-login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.json().token;\r",
+									"\r",
+									"pm.collectionVariables.set(\"parcel-jwt\", token);\r",
+									"\r",
+									"pm.test(\"Token environment variable should be updated\", function() {\r",
+									"  const checkToken = pm.collectionVariables.get(\"parcel-jwt\");\r",
+									"  pm.expect(checkToken).to.eql(token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/signin",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer-get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/customers/alice",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers",
+								"alice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier-get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/bob",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"bob"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "couriers-list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier-create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"bob\",\r\n    \"email\": \"bob@yahoo.com\",\r\n    \"password\": \"bob-pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/couriers",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcels-list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-status-change",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"CANCELLED\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/parcels/2/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parcels",
+								"2",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "parcel-assign",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{parcel-jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "bob",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/parcels/1/assignee",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"parcels",
+								"1",
+								"assignee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "proto",
+			"item": [
+				{
+					"name": "admin.parcels.get()",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin.parcels.getOne",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin.parcels.assign()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "admin",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/parcels/1/assignee",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"parcels",
+								"1",
+								"assignee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin.parcels.unassign()",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/parcels/1/assignee",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"parcels",
+								"1",
+								"assignee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin.parcels.changeStatus()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"DELIVERED\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/parcels/1/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"parcels",
+								"1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin.couriers.create()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"alice\",\r\n    \"email\": \"alice@yahoo.com\",\r\n    \"password\": \"alice-pw\",\r\n    \"repeatPassword\": \"alice-pw\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/couriers",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"couriers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin.couriers.update()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"alice2@yahoo.com\",\r\n    \"password\": \"alice-new-pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/couriers/alice",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"couriers",
+								"alice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier.me()",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/courier",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"courier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier.parcels.get()",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/courier/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"courier",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier.parcels.changeStatus()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"DELIVERING\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/courier/parcels/1/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"courier",
+								"parcels",
+								"1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier.changeStatus()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"ON_DUTY\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/courier/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"courier",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "courier.changeLocation()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"latitude\": \"1\",\r\n    \"longitude\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/courier/location",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"courier",
+								"location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.me()",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/customer",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.register()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/customer",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.update()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"email\": \"alice@yahoo.com\",\r\n    \"password\": \"alice-pw\",\r\n    \"repeatPassword\": \"alice-pw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/customer",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.parcels.get()",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/customer/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.parcels.create()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"source\": \"home\",\r\n    \"destination\": \"workplace\",\r\n    \"description\": \"deliver me to workplace\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/customer/parcels",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer",
+								"parcels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.parcels.cancel()",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/v1/customer/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer",
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customer.parcels.update()",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"source\": \"cafe\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v1/customer/parcels/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customer",
+								"parcels",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "parcel-jwt",
+			"value": "eyJhbGciOiJSUzI1NiJ9.eyJyb2xlcyI6IltcIkFETUlOXCJdIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE2ODAwMjk0MTAsImV4cCI6MTY4MDAzMDAxMH0.HWO2TFmm-AGrM8wENTZEWvBDipVYb8QhBP0S_nhixlKf4pQ1YLrXavVmFLmKoGcWq9segX9onhBoUgBdev-ha2Z4Yp6jlamjjzTbV7MG2WapzQdF_xQxWcbKJeEHYqnKe0uKawTZ-SI0LVX7_4ecr8-bLiSbrHuwtQaoQI-PpYxKAT--yPAKHDA99Hv4EBPSMt2YL_uNcQgRSCuTNi_xUail74AIGWUmcnqvajFzyXfbUWFFQ4ch1MEp_Iy3FwFt6D1G1IJKB2Jj4SMB1JZ4wtu0GzS5zfvxFiJU_mXfgI3CZNke640DBes4BNqXppS4LZG37IfxxqKdqZzxrZD8nXfk0XYgwbWYu0FRbMuZtZDLbDgFih0XHW1ca5Fs4ujcc7vyb2fLbUG1dwZw2ZRBpkRKrGWigF0B8DAPJCJztM7DMe0SYHVGAlR6PmE35ubx4ifUJuHqWZMry4__897izz56UyFZXtDCehrqLHQGxLg493hsSY1xlYwThahE_HgJ30H1_tfQEhdPnwgAnWrsosdtBKge2AehVwWax1WAXz2uo6Hn00GAdnB5DaiqtCDfilCoMoykxgYNqVe_CwyrSM4hHbdue_GtpmJdcQ-iLGpxtyUrbsTZECkoZIVWcvfWsktT81h0P6v91hM-SpP0M-wEkazLcGOu3X1vcElQgx8"
+		},
+		{
+			"key": "parcel-jwt",
+			"value": ""
+		}
+	]
+}
