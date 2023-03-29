@@ -71,7 +71,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
             }
         }
 
-        if (parcel.getAssignedTo().equals(userInfo.username()) && userInfo.roles().contains(UserRole.COURIER)) {
+        if (userInfo.username().equals(parcel.getAssignedTo()) && userInfo.roles().contains(UserRole.COURIER)) {
 
             switch (currentStatus) {
 
@@ -81,7 +81,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
             }
         }
 
-        if (parcel.getCreatedBy().equals(userInfo.username()) && userInfo.roles().contains(UserRole.CUSTOMER)) {
+        if (userInfo.username().equals(parcel.getCreatedBy()) && userInfo.roles().contains(UserRole.CUSTOMER)) {
 
             switch (currentStatus) {
 
