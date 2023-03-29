@@ -14,7 +14,7 @@ public class AdminRoutesConfig {
 
     @Bean
     public RouteLocator adminRoutes(RouteLocatorBuilder rlb,
-                                       JwtAuthFilter jwtAuthFilter) {
+                                    JwtAuthFilter jwtAuthFilter) {
 
         var roleFilter = new RequireRoleFilter(UserRole.ADMIN);
 
@@ -43,6 +43,30 @@ public class AdminRoutesConfig {
                                 .filter(roleFilter)
                                 .setPath("/api/v1/couriers"))
                         .uri("lb://user-service"))
+
+                .route("admin-parcel-get", r -> r.path("/parcels/{id}").and().method(HttpMethod.GET)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .setPath("/api/v1/parcels/{id}"))
+                        .uri("lb://parcel-service"))
+
+                .route("admin-parcel-list", r -> r.path("/parcels").and().method(HttpMethod.GET)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .setPath("/api/v1/parcels"))
+                        .uri("lb://parcel-service"))
+
+                .route("admin-parcel-status-change", r -> r.path("/parcels/{id}/status").and().method(HttpMethod.PUT)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .setPath("/api/v1/parcels/{id}/status"))
+                        .uri("lb://parcel-service"))
+
+                .route("admin-parcel-assign", r -> r.path("/parcels/{id}/assignee").and().method(HttpMethod.PUT)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .setPath("/api/v1/parcels/{id}/assignee"))
+                        .uri("lb://parcel-service"))
                 .build();
     }
 }

@@ -15,8 +15,12 @@ public class OpenApiConfig {
     public List<GroupedOpenApi> apis() {
 
         return List.of(GroupedOpenApi.builder()
-                .pathsToMatch("/user-service/**")
-                .group("user-service")
-                .build());
+                        .pathsToMatch("/user-service/**")
+                        .group("user-service")
+                        .build(),
+                GroupedOpenApi.builder()
+                        .pathsToMatch("/parcel-service/**")
+                        .group("parcel-service")
+                        .build());
     }
 }

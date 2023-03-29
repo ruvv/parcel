@@ -48,6 +48,10 @@ public class PublicRoutesConfig {
                         .filters(f -> f.stripPrefix(1))
                         .uri("lb://user-service"))
 
+                .route("openapi-parcel-service", r -> r.path("/parcel-service/v3/api-docs")
+                        .filters(f -> f.stripPrefix(1))
+                        .uri("lb://parcel-service"))
+
                 .build();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Configuration
 public class CourierRoutesConfig {
@@ -92,6 +93,42 @@ public class CourierRoutesConfig {
                                             .build());
                                 }))
                         .uri("lb://user-service"))
+
+                .route("courier-parcel-get", r -> r.path("/courier/parcels/{id}").and().method(HttpMethod.GET)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .rewritePath("/courier/parcels", "/api/v1/parcels"))
+                        .uri("lb://parcel-service"))
+
+                .route("courier-parcel-list", r -> r.path("/courier/parcels").and().method(HttpMethod.GET)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .rewritePath("/courier/parcels", "/api/v1/parcels")
+                                .filter((exchange, chain) -> {
+
+                                    var username = exchange.getRequest().getHeaders()
+                                            .getOrEmpty(ParcelCustomHeaders.USERNAME).get(0);
+
+                                    var modifiedUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI())
+                                            .replaceQueryParam("courierUsername", username)
+                                            .build(true).toUri();
+
+                                    var mutated = exchange.getRequest().mutate()
+                                            .uri(modifiedUri)
+                                            .build();
+
+                                    return chain.filter(exchange.mutate()
+                                            .request(mutated)
+                                            .build());
+                                }))
+                        .uri("lb://parcel-service"))
+
+                .route("courier-parcel-status-change", r -> r.path("/courier/parcels/{id}/status").and().method(HttpMethod.PUT)
+                        .filters(f -> f.filter(jwtAuthFilter)
+                                .filter(roleFilter)
+                                .setPath("/api/v1/parcels/{id}/status"))
+                        .uri("lb://parcel-service"))
+
                 .build();
     }
 }
