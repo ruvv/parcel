@@ -1,6 +1,7 @@
 package io.ruv.userservice.service.customer;
 
 
+import io.ruv.userservice.api.customer.BalanceChangeDto;
 import io.ruv.userservice.api.customer.CustomerDto;
 import io.ruv.userservice.api.customer.CustomerRegistrationDto;
 import io.ruv.userservice.api.customer.CustomerUpdateDto;
@@ -12,5 +13,7 @@ public interface CustomerService {
     CustomerDto createCustomer(CustomerRegistrationDto customerRegistrationDto);
 
     CustomerDto updateCustomer(String username, CustomerUpdateDto customerUpdateDto);
+
+    CustomerDto updateBalance(String username, BalanceChangeDto balanceChangeDto);
 
 }

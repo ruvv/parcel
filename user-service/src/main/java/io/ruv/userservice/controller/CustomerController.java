@@ -1,5 +1,6 @@
 package io.ruv.userservice.controller;
 
+import io.ruv.userservice.api.customer.BalanceChangeDto;
 import io.ruv.userservice.api.customer.CustomerDto;
 import io.ruv.userservice.api.customer.CustomerRegistrationDto;
 import io.ruv.userservice.api.customer.CustomerUpdateDto;
@@ -75,5 +76,19 @@ public class CustomerController {
             @Parameter(description = "Customer info") @Valid @RequestBody CustomerUpdateDto update) {
 
         return customerService.updateCustomer(username, update);
+    }
+
+    @Operation(summary = "Manipulate existing customer balance and locked balance")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Balance changed"),
+            @ApiResponse(responseCode = "404", description = "Customer with provided username was not found"),
+            @ApiResponse(responseCode = "409", description = "Insufficient balance")
+    })
+    @PatchMapping("{username}/balance")
+    public CustomerDto changeBalance(
+            @Parameter(description = "Username of a customer") @PathVariable String username,
+            @Parameter(description = "Balance changes") @RequestBody BalanceChangeDto balanceChangeDto) {
+
+        return customerService.updateBalance(username, balanceChangeDto);
     }
 }

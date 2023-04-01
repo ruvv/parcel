@@ -1,6 +1,7 @@
 package io.ruv.userservice.service.customer;
 
 import io.ruv.userservice.api.UserRole;
+import io.ruv.userservice.api.customer.BalanceChangeDto;
 import io.ruv.userservice.api.customer.CustomerDto;
 import io.ruv.userservice.api.customer.CustomerRegistrationDto;
 import io.ruv.userservice.api.customer.CustomerUpdateDto;
@@ -10,7 +11,11 @@ import io.ruv.userservice.service.exception.UserNotFoundException;
 import io.ruv.userservice.service.exception.UsernameConflictException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpStatus;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +60,49 @@ public class CustomerServiceImpl implements CustomerService {
         var toSave = converter.update(entity, customerUpdateDto);
         var saved = repository.save(toSave);
 
+        return converter.dto(saved);
+    }
+
+    @Override
+    @Retryable(retryFor = OptimisticLockingFailureException.class)
+    @Transactional
+    public CustomerDto updateBalance(String username, BalanceChangeDto balanceChangeDto) {
+
+        var entity = repository.findById(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+        if (balanceChangeDto.getBalanceDelta() == null && balanceChangeDto.getLockedDelta() == null) {
+            return converter.dto(entity);
+        }
+
+        if (balanceChangeDto.getBalanceDelta() != null) {
+
+            var newBalance = entity.getBalance() + balanceChangeDto.getBalanceDelta();
+
+            if (newBalance >= 0) {
+
+                entity.setBalance(newBalance);
+            } else {
+
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Insufficient balance.");
+            }
+        }
+
+        if (balanceChangeDto.getLockedDelta() != null) {
+
+            var newLockedBalance = entity.getLockedBalance() + balanceChangeDto.getLockedDelta();
+
+            if (newLockedBalance >= 0) {
+
+                entity.setLockedBalance(newLockedBalance);
+            } else {
+
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        String.format("User '%s''s locked balance is broken.", username));
+            }
+        }
+
+        var saved = repository.save(entity);
         return converter.dto(saved);
     }
 }

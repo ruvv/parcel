@@ -39,6 +39,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private List<UserRole> roles;
     private boolean enabled = true;
+    @Version
+    private long version;
 
 
     @Override

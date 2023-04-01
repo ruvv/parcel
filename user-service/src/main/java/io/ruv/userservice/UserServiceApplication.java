@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.retry.annotation.EnableRetry;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @OpenAPIDefinition(info =
     @Info(title = "Users API", version = "v1", description = "Parcel users service API v1.0")
 )
+@EnableRetry
 public class UserServiceApplication {
 
     public static void main(String[] args) {
