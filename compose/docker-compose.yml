@@ -48,6 +48,24 @@ services:
       timeout: 5s
       retries: 3
 
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3.11-management
+    hostname: "${RABBIT_MQ_HOSTNAME}"
+    ports:
+      - "${RABBIT_MQ_PORT}:${RABBIT_MQ_PORT}"
+      - "15672:15672"
+    volumes:
+      - type: volume
+        source: rabbit-data
+        target: /var/lib/rabbitmq/mnesia
+      - type: bind
+        source: ./rabbitmq/rabbitmq.conf
+        target: /etc/rabbitmq/rabbitmq.conf
+      - type: bind
+        source: ./rabbitmq/definitions.json
+        target: /etc/rabbitmq/definitions.json
+
   parcel-discovery:
     container_name: parcel-discovery
     build: ../discovery/.
@@ -82,6 +100,10 @@ services:
       DB_USERNAME: "${USER_DB_USER}"
       DB_PASSWORD: "${USER_DB_PASSWORD}"
       JWT_TOKEN_EXPIRY_MS: "${JWT_TOKEN_EXPIRY_MS}"
+      RABBIT_MQ_HOSTNAME: "${RABBIT_MQ_HOSTNAME}"
+      RABBIT_MQ_PORT: "${RABBIT_MQ_PORT}"
+      RABBIT_MQ_USERNAME: "${RABBIT_MQ_USER_SERVICE_USERNAME}"
+      RABBIT_MQ_PASSWORD: "${RABBIT_MQ_USER_SERVICE_PASSWORD}"
     volumes:
       - type: bind
         source: ./jwtRS256.key
@@ -97,7 +119,12 @@ services:
       DB_URL: "jdbc:postgresql://${PARCEL_DB_HOSTNAME}:${PARCEL_DB_PORT}/parceldb"
       DB_USERNAME: "${PARCEL_DB_USER}"
       DB_PASSWORD: "${PARCEL_DB_PASSWORD}"
+      RABBIT_MQ_HOSTNAME: "${RABBIT_MQ_HOSTNAME}"
+      RABBIT_MQ_PORT: "${RABBIT_MQ_PORT}"
+      RABBIT_MQ_USERNAME: "${RABBIT_MQ_PARCEL_SERVICE_USERNAME}"
+      RABBIT_MQ_PASSWORD: "${RABBIT_MQ_PARCEL_SERVICE_PASSWORD}"
 
 volumes:
   pg-users-data:
   pg-parcels-data:
+  rabbit-data:

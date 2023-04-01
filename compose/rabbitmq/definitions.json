@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "name": "userservice",
+      "password_hash": "9jDZBC9AzRy9VokJ9sr4sTmypt88qx2tk1nM3a7TA6Ls6Zxj",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "monitoring"
+      ],
+      "limits": {}
+    },
+    {
+      "name": "parcelservice",
+      "password_hash": "dc0dc3gjTUh+OFVqJq5R9vfbAB5nylaoJJ0OFMIDUmVXSOqk",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "monitoring"
+      ],
+      "limits": {}
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "userservice",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "parcelservice",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ]
+}
