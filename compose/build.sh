@@ -2,7 +2,10 @@
 
 export SHELL=/bin/bash
 
-cd ../user-roles || exit
+cd ../user-api || exit
+$SHELL mvnw clean install
+
+cd ../parcel-api || exit
 $SHELL mvnw clean install
 
 cd ../discovery || exit
