@@ -1,4 +1,4 @@
-package io.ruv.parcel.user.api.customer;
+package io.ruv.parcel.messaging.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,10 +7,11 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-@AllArgsConstructor
 @NoArgsConstructor
-public class BalanceChangeDto {
+@AllArgsConstructor
+public class ParcelApprovalDto {
 
-    private Integer balanceDelta;
-    private Integer lockedDelta;
+    private long parcelId;
+    private boolean success;
+    private String comment;
 }

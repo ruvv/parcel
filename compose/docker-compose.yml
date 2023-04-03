@@ -76,6 +76,10 @@ services:
       HOSTNAME: "${DISCOVERY_HOSTNAME}"
 
   gateway:
+    depends_on:
+      - parcel-discovery
+      - user-service
+      - parcel-service
     container_name: parcel-gateway
     build: ../gateway/.
     ports:
@@ -89,6 +93,10 @@ services:
         target: "${JWT_RSA_PUBLIC_KEY_PATH}"
 
   user-service:
+    depends_on:
+      - rabbit
+      - users-pg
+      - parcel-discovery
     container_name: user-service
     build: ../user-service/.
     ports:
@@ -110,6 +118,10 @@ services:
         target: "${JWT_RSA_PRIVATE_KEY_PATH}"
 
   parcel-service:
+    depends_on:
+      - rabbit
+      - parcel-pg
+      - parcel-discovery
     container_name: parcel-service
     build: ../parcel-service/.
     ports:

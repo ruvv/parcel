@@ -1,4 +1,4 @@
-package io.ruv.parcel.parcelservice;
+package io.ruv.parcel;
 
 import io.ruv.parcel.parcelservice.repo.ParcelRepository;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

@@ -8,6 +8,9 @@ $SHELL mvnw clean install
 cd ../parcel-api || exit
 $SHELL mvnw clean install
 
+cd ../messaging || exit
+$SHELL mvnw clean install
+
 cd ../discovery || exit
 $SHELL mvnw clean package
 

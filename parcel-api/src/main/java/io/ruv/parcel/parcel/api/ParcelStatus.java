@@ -9,5 +9,7 @@ public enum ParcelStatus {
     DELIVERING,
     DELIVERY_PROBLEM,
     DELIVERED,
-    CANCELLED
+    CANCELLED;
+
+    public static final String BALANCE_PROCESSED = "BALANCE_PROCESSED";
 }

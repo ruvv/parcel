@@ -7,6 +7,7 @@ import io.ruv.parcel.parcelservice.repo.ParcelRepository;
 import io.ruv.parcel.parcelservice.service.exception.ForbiddenParcelStatusChangeException;
 import io.ruv.parcel.parcelservice.service.exception.IllegalParcelStatusChangeException;
 import io.ruv.parcel.parcelservice.service.remote.RemoteUserService;
+import io.ruv.parcel.parcelservice.service.remote.WorkflowEventSender;
 import io.ruv.parcel.user.api.UserRole;
 import io.ruv.parcel.user.api.auth.UserInfo;
 import jakarta.annotation.Nullable;
@@ -25,6 +26,7 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
 
     private final ParcelRepository parcelRepository;
     private final RemoteUserService userService;
+    private final WorkflowEventSender workflowEventSender;
 
     @Override
     public Parcel processCreatedParcel(Parcel parcel, UserInfo user) {
@@ -184,15 +186,8 @@ public class ParcelWorkflowServiceImpl implements ParcelWorkflowService {
                                  @Nullable ParcelStatus prevStatus, @Nullable String prevAssignee) {
 
         var saved = parcelRepository.save(parcel);
-        launchWorkflowEvent(saved, userInfo, prevStatus, prevAssignee);
+        workflowEventSender.sendWorkflowEvent(parcel, userInfo, prevStatus, prevAssignee);
         return saved;
-    }
-
-    @SuppressWarnings("unused")
-    private void launchWorkflowEvent(Parcel parcel, UserInfo userInfo,
-                                     @Nullable ParcelStatus prevStatus, @Nullable String prevAssignee) {
-
-        // todo feed it to streaming platform
     }
 
     private void ensureAssigneeExists(String assignee) {
